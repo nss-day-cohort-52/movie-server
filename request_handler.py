@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from views.actor_request import create_actor, get_all_actors, get_single_actor
 
-from views.movie_request import create_movie, get_all_movies, get_single_movie
+from views.movie_request import create_movie, get_all_movies, get_single_movie, update_movie
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -84,11 +84,23 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         self.wfile.write(response.encode())
 
-
-
     def do_PUT(self):
         """Handles PUT requests to the server"""
-        pass
+        
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+
+        resource, id = self.parse_url()
+        was_updated = False
+        if resource == "movies":
+            was_updated = update_movie(post_body, id)
+
+        
+        if was_updated:
+            self._set_headers(204)
+        else:
+            self._set_headers(404)
 
     def do_DELETE(self):
         """Handle DELETE Requests"""

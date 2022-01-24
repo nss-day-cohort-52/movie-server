@@ -55,3 +55,37 @@ def create_actor(actor):
         actor['id'] = id
 
         return json.dumps(actor)
+
+def update_actor(updated_actor, id):
+    with sqlite3.connect('./db.sqlite3') as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        Update Actors set
+        name = ?
+        where id = ?
+        """, (updated_actor['name'], id))
+
+        was_updated = db_cursor.rowcount
+
+        if was_updated:
+            return True
+        else:
+            return False
+
+
+def delete_actor(id):
+    with sqlite3.connect('./db.sqlite3') as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        delete from Actors
+        where id = ?
+        """, (id, ))
+
+        was_deleted = db_cursor.rowcount
+
+        if was_deleted:
+            return True
+        else:
+            return False

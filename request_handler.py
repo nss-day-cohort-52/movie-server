@@ -1,8 +1,8 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
-from views.actor_request import create_actor, get_all_actors, get_single_actor
+from views.actor_request import create_actor, delete_actor, get_all_actors, get_single_actor, update_actor
 
-from views.movie_request import create_movie, get_all_movies, get_single_movie, update_movie
+from views.movie_request import create_movie, delete_movie, get_all_movies, get_single_movie, update_movie
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -95,6 +95,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         was_updated = False
         if resource == "movies":
             was_updated = update_movie(post_body, id)
+        if resource == "actors":
+            was_updated = update_actor(post_body, id)
 
         
         if was_updated:
@@ -104,7 +106,21 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_DELETE(self):
         """Handle DELETE Requests"""
-        pass
+        was_deleted = False
+        resource, id = self.parse_url()
+
+        if resource == 'movies':
+            was_deleted = delete_movie(id)
+        if resource == "actors":
+            was_deleted = delete_actor(id)
+
+
+        if was_deleted:
+            self._set_headers(204)
+        else:
+            self._set_headers(404)
+        
+        
 
 
 def main():

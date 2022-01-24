@@ -93,20 +93,38 @@ def update_movie(updated_movie, id):
             name = ?,
             is_showing = ?
             where id = ?
-        """, (updated_movie['genre'], updated_movie['movie_rating'], updated_movie['name'], updated_movie['is_showing'], id))
+        """, (updated_movie['genre'], updated_movie['movie_rating'],
+              updated_movie['name'], updated_movie['is_showing'], id)
+        )
 
         was_updated = db_cursor.rowcount
 
         db_cursor.execute("""
         delete from Movie_actor where movie_id = ?
         """, (id, ))
-        
+
         for actor_id in updated_movie['actors']:
             db_cursor.execute("""
                 insert into Movie_Actor values (null, ?, ?)
             """, (actor_id, id))
 
         if was_updated:
+            return True
+        else:
+            return False
+
+def delete_movie(id):
+    with sqlite3.connect('./db.sqlite3') as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        delete from Movies
+        where id = ?
+        """, (id, ))
+
+        was_deleted = db_cursor.rowcount
+
+        if was_deleted:
             return True
         else:
             return False

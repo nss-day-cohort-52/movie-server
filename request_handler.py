@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
-from views.actor_request import get_all_actors, get_single_actor
+from views.actor_request import create_actor, get_all_actors, get_single_actor
 
 from views.movie_request import create_movie, get_all_movies, get_single_movie
 
@@ -79,6 +79,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         response = None
         if resource == 'movies':
             response = create_movie(post_body)
+        if resource == 'actors':
+            response = create_actor(post_body)
 
         self.wfile.write(response.encode())
 

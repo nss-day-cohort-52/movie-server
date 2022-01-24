@@ -39,3 +39,19 @@ def get_single_actor(id):
         actor = Actor(row['id'], row['name'])
 
         return json.dumps(actor.__dict__)
+
+
+def create_actor(actor):
+    with sqlite3.connect('./db.sqlite3') as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        insert into Actors (name ) 
+        values (?)
+        """, (actor['name'], ))
+
+        id = db_cursor.lastrowid
+
+        actor['id'] = id
+
+        return json.dumps(actor)

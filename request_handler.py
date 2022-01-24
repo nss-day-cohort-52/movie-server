@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from views.actor_request import get_all_actors, get_single_actor
 
-from views.movie_request import get_all_movies, get_single_movie
+from views.movie_request import create_movie, get_all_movies, get_single_movie
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -70,7 +70,19 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_POST(self):
         """Make a post request to the server"""
-        pass
+        self._set_headers(201)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+
+        resource, _ = self.parse_url()
+        response = None
+        if resource == 'movies':
+            response = create_movie(post_body)
+
+        self.wfile.write(response.encode())
+
+
 
     def do_PUT(self):
         """Handles PUT requests to the server"""

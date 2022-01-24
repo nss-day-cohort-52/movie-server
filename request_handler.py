@@ -1,5 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+from views.actor_request import get_all_actors, get_single_actor
 
 from views.movie_request import get_all_movies, get_single_movie
 
@@ -59,6 +60,11 @@ class HandleRequests(BaseHTTPRequestHandler):
                 response = get_single_movie(id)
             else:
                 response = get_all_movies()
+        if resource == 'actors':
+            if id is not None:
+                response = get_single_actor(id)
+            else:
+                response = get_all_actors()
         
         self.wfile.write(response.encode())
 

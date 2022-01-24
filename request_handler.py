@@ -1,6 +1,8 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 
+from views.movie_request import get_all_movies, get_single_movie
+
 
 class HandleRequests(BaseHTTPRequestHandler):
     """Handles the requests to this server"""
@@ -10,8 +12,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         split_path = self.path.split('/')
         resource = split_path[1]
         if '?' in resource:
-            param = resource.split('?')[1]  # email=jenna@solis.com
-            resource = resource.split('?')[0]  # customer
+            param = resource.split('?')[1]
+            resource = resource.split('?')[0]
             pair = param.split('=')
             key = pair[0]
             value = pair[1]
@@ -49,7 +51,16 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_GET(self):
         """Handle Get requests to the server"""
-        pass
+        (resource, id) = self.parse_url()
+        self._set_headers(200)
+        response = None
+        if resource == 'movies':
+            if id is not None:
+                response = get_single_movie(id)
+            else:
+                response = get_all_movies()
+        
+        self.wfile.write(response.encode())
 
     def do_POST(self):
         """Make a post request to the server"""
